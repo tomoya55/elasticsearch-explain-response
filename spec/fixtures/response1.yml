@@ -1,0 +1,39 @@
+---
+_index: "megacorp"
+_type: "employee"
+_id: "1"
+matched: true
+explanation:
+  value: 0.053770658
+  description: "product of:"
+  details:
+  - value: 0.107541315
+    description: "sum of:"
+    details:
+    - value: 0.107541315
+      description: "weight(_all:smith in 0) [PerFieldSimilarity], result of:"
+      details:
+      - value: 0.107541315
+        description: "score(doc=0,freq=1.0), product of:"
+        details:
+        - value: 0.43016526
+          description: "queryWeight, product of:"
+          details:
+          - value: 1.0
+            description: "idf(docFreq=2, maxDocs=3)"
+          - value: 0.43016526
+            description: "queryNorm"
+        - value: 0.25
+          description: "fieldWeight in 0, product of:"
+          details:
+          - value: 1.0
+            description: "tf(freq=1.0), with freq of:"
+            details:
+            - value: 1.0
+              description: "termFreq=1.0"
+          - value: 1.0
+            description: "idf(docFreq=2, maxDocs=3)"
+          - value: 0.25
+            description: "fieldNorm(doc=0)"
+  - value: 0.5
+    description: "coord(1/2)"
