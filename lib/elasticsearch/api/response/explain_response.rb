@@ -6,18 +6,18 @@ module Elasticsearch
       # Parse Elasticsearch Explain API response json and display them in a neat way
       #
       # @example
-      #    result = RecipeSearch.new(query: query, locale: locale).explain(id)
-      #    Global::ElasticsearchExplainRenderer.render(result)
-      #
+      #    require 'elasticsearch'
+      #    client = Elasticsearch::Client.new
+      #    result = client.explain index: "megacorp", type: "employee", id: "1", q: "last_name:Smith"
+      #    Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).render_in_line
+      #      #=> "1.0 = (1.0(termFreq=1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)"
       class ExplainResponse
         include ColorHelper
 
         class << self
           # Show scoring as a simple math formula
           # @example
-          #    65.04 = ((0.26 + 0.86 + 0.86) x 0.25(coord(3/12)))
-          #            x ((2.0 x 10.0 x 3.0 x 3.0 x 0.73) min 3.4028234999999995e+38(maxBoost))
-          #            x 1.0(queryBoost)
+          #    "1.0 = (1.0(termFreq=1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)"
           def render_in_line(result, max: nil)
             new(result["explanation"], max: max).render_in_line
           end
