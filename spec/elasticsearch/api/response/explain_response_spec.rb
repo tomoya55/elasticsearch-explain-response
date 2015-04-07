@@ -45,4 +45,19 @@ describe Elasticsearch::API::Response::ExplainResponse do
       ]
     end
   end
+
+  describe "colorization" do
+    let(:response) do
+      described_class.new(fake_response["explanation"])
+    end
+
+    subject do
+      response.render_in_line
+    end
+
+    it "includes ansi color codes" do
+      expect(subject).to include("\e[35;1m0")
+      expect(subject).to include("\e[0m")
+    end
+  end
 end

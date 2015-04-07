@@ -17,6 +17,7 @@ module Elasticsearch
 
         def load_ansi
           require "ansi/core"
+          true
         rescue LoadError
           false
         end
