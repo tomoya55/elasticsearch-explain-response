@@ -5,6 +5,26 @@ describe Elasticsearch::API::Response::ExplainResponse do
     fixture_load(:response1)
   end
 
+  describe '.render_in_line' do
+    subject do
+      described_class.render_in_line(fake_response)
+    end
+
+    it "returns summary" do
+      expect(subject).not_to be_empty
+    end
+  end
+
+  describe '.render' do
+    subject do
+      described_class.render(fake_response)
+    end
+
+    it "returns summary" do
+      expect(subject).not_to be_empty
+    end
+  end
+
   describe "#render_in_line" do
     let(:response) do
       described_class.new(fake_response["explanation"])

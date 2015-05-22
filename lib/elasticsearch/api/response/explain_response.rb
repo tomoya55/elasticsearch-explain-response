@@ -30,9 +30,7 @@ module Elasticsearch
           #     54.3 = 54.3 min 3.4028234999999995e+38(maxBoost)
           #       54.3 = 2.0 x 10.0 x 3.0 x 0.91
           def render(result, max: nil)
-            parser = new(result["explanation"], max: max)
-            parser.parse
-            parser.render
+            new(result["explanation"], max: max).render
           end
         end
 
