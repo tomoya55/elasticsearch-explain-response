@@ -19,14 +19,16 @@ describe Elasticsearch::API::Response::ExplainResponse do
     end
 
     it "returns summary of explain in line" do
-      expect(subject).to eq("0.05 = (0.43(queryWeight) x 0.25(fieldWeight)) x 0.5(coord(1/2))")
+      expect(subject).to eq("0.05 = (0.43(queryWeight) x 0.25(fieldWeight) x 10.0) x 0.5(coord(1/2)) x 1.0(queryBoost)")
     end
   end
 
   describe "#render" do
     let(:response) do
-      described_class.new(fake_response["explanation"])
+      described_class.new(fake_response["explanation"], max: max)
     end
+
+    let(:max) { nil }
 
     subject do
       response.render
@@ -38,11 +40,27 @@ describe Elasticsearch::API::Response::ExplainResponse do
 
     it "returns summary of explain in lines" do
       expect(subject).to eq [
-        "0.05 = 0.11 x 0.5(coord(1/2))",
+        "0.05 = 0.11 x 0.5(coord(1/2)) x 1.0(queryBoost)",
         "  0.11 = 0.11(_all:smith)",
         "    0.11 = 0.11(score)",
-        "      0.11 = 0.43(queryWeight) x 0.25(fieldWeight)"
+        "      0.11 = 0.43(queryWeight) x 0.25(fieldWeight) x 10.0"
       ]
+    end
+
+    context "with max = 4" do
+      let(:max) { 4 }
+
+      it "returns summary of explain in lines" do
+        expect(subject).to eq [
+          "0.05 = 0.11 x 0.5(coord(1/2)) x 1.0(queryBoost)",
+          "  0.11 = 0.11(_all:smith)",
+          "    0.11 = 0.11(score)",
+          "      0.11 = 0.43(queryWeight) x 0.25(fieldWeight) x 10.0",
+          "        0.43 = 1.0(idf(2/3)) x 0.43(queryNorm)",
+          "        0.25 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm)",
+          "        10.0 = 1.0(match(name.raw:smith))) x 10.0(boost)"
+        ]
+      end
     end
   end
 

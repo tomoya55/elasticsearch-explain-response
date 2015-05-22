@@ -81,19 +81,20 @@ module Elasticsearch
             [field($1), value($2)].join(':')
           when /\Aidf\(docFreq\=(\d+)\,\s+maxDocs\=(\d+)\)\z/
             "idf(#{$1}/#{$2})"
-          when /\Atf\(freq\=([\d.]+)\)\,\swith\sfreq\sof\:\z/
+          when /\Atf\(freq\=([\d.]+)\)\, with freq of\:\z/
             "tf(#{$1})"
           when /\Ascore\(doc\=\d+\,freq=[\d\.]+\)\,\sproduct\sof\:\z/
             "score"
-          when /\Amatch\sfilter\:\s(?:cache\()?(?:\w+\()?([\w\*]+)\:([\w\*]+)\)*\z/
+          when /\Amatch filter\: (?:cache\()?(?:\w+\()?([\w\.\*]+)\:(.*)\)*\z/,
+               /\Amatch filter\: QueryWrapperFilter\(([\w\.\*]+)\:([\w\*]+)\)\z/
             "match(#{field($1)}:#{value($2)})"
-          when /\AFunction\sfor\sfield\s([\w\_]+)\:\z/
+          when /\AFunction for field ([\w\_]+)\:\z/
             "func(#{field($1)})"
           when /\A(queryWeight|fieldWeight|fieldNorm)/
             $1
           when /\Afunction\sscore/
             nil
-          when "static boost factor"
+          when "static boost factor", "boostFactor"
             "boost"
           when "Math.min of", "sum of:", "product of:"
             nil
