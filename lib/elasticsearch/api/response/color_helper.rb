@@ -10,7 +10,7 @@ module Elasticsearch
           end
         end
 
-        def diable_colorization
+        def disable_colorization
           @ansi_loaded = true
           @colorized = false
         end
