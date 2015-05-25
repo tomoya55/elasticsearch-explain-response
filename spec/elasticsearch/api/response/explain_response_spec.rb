@@ -8,7 +8,6 @@ describe Elasticsearch::API::Response::ExplainResponse do
 
   describe '.render_in_line' do
     subject do
-      pending
       described_class.render_in_line(fake_response)
     end
 
@@ -32,9 +31,8 @@ describe Elasticsearch::API::Response::ExplainResponse do
       described_class.new(fake_response["explanation"], colorize: false)
     end
 
-    before do
-      pending
-      response.diable_colorization
+    subject do
+      response.render_in_line
     end
 
     it "returns summary of explain in line" do

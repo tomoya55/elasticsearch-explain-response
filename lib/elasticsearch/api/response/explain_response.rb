@@ -1,7 +1,7 @@
 require "elasticsearch/api/response/explain_node"
-require "elasticsearch/api/response/explain_renderer"
 require "elasticsearch/api/response/description"
-require "elasticsearch/api/response/description_parser"
+require "elasticsearch/api/response/explain_parser"
+require "elasticsearch/api/response/explain_renderer"
 
 module Elasticsearch
   module API
@@ -44,15 +44,19 @@ module Elasticsearch
         end
 
         def render
-          root = ExplainNode.new(explain, level: @indent)
-          root.parse_details
-          @renderer.render(root)
+          parse_details
+          @renderer.render(@root)
         end
 
         def render_in_line
-          score = explain["value"]
-          details = parse_for_oneline(explain)
-          render_result(score, render_details(details, indent: 0))
+          parse_details
+          @renderer.render_in_line(@root)
+        end
+
+        private
+
+        def parse_details
+          @root ||= ExplainParser.new.parse(explain)
         end
       end
     end

@@ -17,6 +17,10 @@ module Elasticsearch
           @buffer.join("\n")
         end
 
+        def render_in_line(tree)
+          [render_score(tree.score), "=", recursive_render_details(tree)].flatten.join(" ")
+        end
+
         def recursive_render(node)
           return if node.level > @max
           render_result(node) if node.details.any?
@@ -38,11 +42,16 @@ module Elasticsearch
         def render_details(node)
           node.children.map do |child|
             render_node(child)
-            # if child.level < @max
-            #   wrap_paren(render_details(child)) if child.details.any?
-            # else
-            #
-            # end
+          end.compact.join(" #{node.score_type} ")
+        end
+
+        def recursive_render_details(node)
+          node.children.map do |child|
+            if child.children.any? && child.level <= @max
+              wrap_paren(recursive_render_details(child))
+            else
+              render_node(child)
+            end
           end.compact.join(" #{node.score_type} ")
         end
 
