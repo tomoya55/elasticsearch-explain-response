@@ -78,7 +78,7 @@ module Elasticsearch
               elsif child.children[0].match? && child.children[1].boost?
                 match = child.children[0]
                 boost = child.children[1]
-                "#{boost.score}(#{render_description(match.description)})"
+                "#{render_score(boost.score)}(#{render_description(match.description)})"
               else
                 recursive_render_details(child)
               end
