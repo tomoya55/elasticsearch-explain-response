@@ -1,0 +1,70 @@
+---
+_index: "travel"
+_type: "cities"
+_id: "1"
+matched: true
+explanation:
+  value: 887.19495
+  description: "function score, product of:"
+  details:
+  - value: 887.19495
+    description: "Math.min of"
+    details:
+    - value: 887.19495
+      description: "function score, score mode [multiply]"
+      details:
+      - value: 10.0
+        description: "function score, product of:"
+        details:
+        - value: 1.0
+          description: "match filter: QueryWrapperFilter(name:hawaii)"
+        - value: 10.0
+          description: "static boost factor"
+          details:
+          - value: 10.0
+            description: "boostFactor"
+      - value: 10.0
+        description: "function score, product of:"
+        details:
+        - value: 1.0
+          description: "match filter: QueryWrapperFilter(name:guam)"
+        - value: 10.0
+          description: "static boost factor"
+          details:
+          - value: 10.0
+            description: "boostFactor"
+      - value: 3.0
+        description: "function score, product of:"
+        details:
+        - value: 1.0
+          description: "match filter: cache(with_beach:T)"
+        - value: 3.0
+          description: "static boost factor"
+          details:
+          - value: 3.0
+            description: "boostFactor"
+      - value: 0.9857722
+        description: "function score, product of:"
+        details:
+        - value: 1.0
+          description: "match filter: *:*"
+        - value: 0.9857722
+          description: "Function for field updated_at:"
+          details:
+          - value: 0.9857722
+            description: "exp(- MIN[Math.max(Math.abs(1.424917503E12(=doc value)\
+              \ - 1.432308964176E12(=origin))) - 0.0(=offset), 0)] * 1.938722193962471E-12)"
+      - value: 3.0
+        description: "function score, product of:"
+        details:
+        - value: 1.0
+          description: "match filter: cache(region_id:[3 TO 3])"
+        - value: 3.0
+          description: "static boost factor"
+          details:
+          - value: 3.0
+            description: "boostFactor"
+    - value: 3.4028235E+38
+      description: "maxBoost"
+  - value: 1.0
+    description: "queryBoost"

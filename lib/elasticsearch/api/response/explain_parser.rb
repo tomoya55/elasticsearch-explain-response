@@ -45,8 +45,7 @@ module Elasticsearch
             type =  "score"
             operation = "score"
             operator = "x"
-          when /\Amatch filter\: (?:cache\()?(?:\w+\()?([\w\.\*]+)\:(.*)\)*\z/,
-               /\Amatch filter\: QueryWrapperFilter\(([\w\.\*]+)\:([\w\*]+)\)\z/
+          when /\Amatch filter\: (?:cache\()?(?:\w+\()?([\w\.\*]+)\:([^\)]+)\)*\z/
             type = "match"
             operation = "match"
             field = $1
@@ -66,7 +65,8 @@ module Elasticsearch
           when /\AqueryNorm/
             type = "queryNorm"
             operation = "queryNorm"
-          when /\Afunction\sscore\, product of\:\z/
+          when /\Afunction score\, product of\:\z/,
+            /\Afunction score\, score mode \[multiply\]\z/
             type = "func score"
             operator = "x"
           when "static boost factor", "boostFactor"
@@ -85,6 +85,8 @@ module Elasticsearch
           when "sum of:"
             type = "sum"
             operator = "+"
+          when "maxBoost"
+            type = "maxBoost"
           else
             type = description
             operation = description
