@@ -13,8 +13,32 @@ module Elasticsearch
           @children = []
         end
 
-        def score_type
-          description.score_type
+        def operator
+          description.operator
+        end
+
+        def type
+          description.type
+        end
+
+        def func?
+          type == "func"
+        end
+
+        def match?
+          type == "match"
+        end
+
+        def match_all?
+          type == "match" && description.field == "*" && description.value == "*"
+        end
+
+        def boost?
+          type == "boost"
+        end
+
+        def max_boost?
+          type == "maxBoost"
         end
       end
     end

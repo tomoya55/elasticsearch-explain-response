@@ -29,60 +29,79 @@ module Elasticsearch
 
         def parse_description(description)
           case description
-          when /\Aweight\((\w+)\:(\w+)\s+in\s+\d+\)\s+\[\w+\]\,\s+result\s+of\:\z/
+          when /\Aweight\((\w+)\:(\w+)\s+in\s+\d+\)\s+\[\w+\]\, result of\:\z/
+            type = "weight"
             operation = "weight"
+            operator = "x"
             field = $1
             value = $2
-          when /\Aidf\(docFreq\=(\d+)\,\s+maxDocs\=(\d+)\)\z/
+          when /\Aidf\(docFreq\=(\d+)\, maxDocs\=(\d+)\)\z/
+            type = "idf"
             operation = "idf(#{$1}/#{$2})"
           when /\Atf\(freq\=([\d.]+)\)\, with freq of\:\z/
+            type = "tf"
             operation = "tf(#{$1})"
-          when /\Ascore\(doc\=\d+\,freq=[\d\.]+\)\,\sproduct\sof\:\z/
+          when /\Ascore\(doc\=\d+\,freq=[\d\.]+\)\, product of\:\z/
+            type =  "score"
             operation = "score"
-          when /\Amatch filter\: (?:cache\()?(?:\w+\()?([\w\.\*]+)\:(.*)\)*\z/,
-               /\Amatch filter\: QueryWrapperFilter\(([\w\.\*]+)\:([\w\*]+)\)\z/
-             operation = "match"
-             field = $1
-             value = $2
+            operator = "x"
+          when /\Amatch filter\: (?:cache\()?(?:\w+\()?([\w\.\*]+)\:([^\)]+)\)*\z/
+            type = "match"
+            operation = "match"
+            field = $1
+            value = $2
           when /\AFunction for field ([\w\_]+)\:\z/
+            type = "func"
             operation = "func"
             field = $1
-          when /\A(queryWeight|fieldWeight|fieldNorm)/
-            operation = $1
-          when /\Afunction\sscore/
-            nil
+          when /\AqueryWeight\, product of\:\z/
+            type = "queryWeight"
+            operation = "queryWeight"
+            operator = "x"
+          when /\AfieldWeight in \d+\, product of\:\z/
+            type = "fieldWeight"
+            operation = "fieldWeight"
+            operator = "x"
+          when /\AqueryNorm/
+            type = "queryNorm"
+            operation = "queryNorm"
+          when /\Afunction score\, product of\:\z/,
+            /\Afunction score\, score mode \[multiply\]\z/
+            type = "func score"
+            operator = "x"
           when "static boost factor", "boostFactor"
+            type = "boost"
             operation = "boost"
-          when "product of:"
+          when "product of:", "[multiply]"
+            type = "product"
             operation = "product"
-          when "Math.min of", "sum of:"
-            nil
+            operator = "x"
+          when "Math.min of"
+            type = "min"
+            operator = "min"
+          when "Math.max of"
+            type = "max"
+            operator = "max"
+          when "sum of:"
+            type = "sum"
+            operator = "+"
+          when "maxBoost"
+            type = "maxBoost"
           else
+            type = description
             operation = description
           end
 
+          # binding.pry if operator.nil?
+
           Description.new(
             raw: description,
-            score_type: score_type(description),
+            type: type,
+            operator: operator,
             operation: operation,
             field: field,
             value: value,
           )
-        end
-
-        def score_type(description)
-          case
-          when description.include?("product of")
-            "x"
-          when description.include?("[multiply]")
-            "x"
-          when description.include?("sum of")
-            "+"
-          when description.include?("Math.min of")
-            "min"
-          else
-            " "
-          end
         end
       end
     end

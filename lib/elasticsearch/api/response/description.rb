@@ -2,11 +2,12 @@ module Elasticsearch
   module API
     module Response
       class Description
-        attr_reader :raw, :score_type, :operation, :field, :value
+        attr_reader :raw, :type, :operator, :operation, :field, :value
 
-        def initialize(raw:, score_type:, operation: nil, field: nil, value: nil)
+        def initialize(raw:, type:, operator:, operation: nil, field: nil, value: nil)
           @raw = raw
-          @score_type = score_type
+          @type = type
+          @operator = operator
           @operation = operation
           @field = field
           @value = value
