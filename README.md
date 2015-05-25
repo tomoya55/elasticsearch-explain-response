@@ -1,5 +1,7 @@
 # Elasticsearch-explain-response
 
+[![Circle CI](https://circleci.com/gh/tomoya55/elasticsearch-explain-response/tree/master.svg?style=svg)](https://circleci.com/gh/tomoya55/elasticsearch-explain-response/tree/master)
+
 Parse Elasticsearch Explain Response and summarize it in a simple way.
 This gem is intended for developers working with Elasticsearch to debug search scores
 in a easier way.
