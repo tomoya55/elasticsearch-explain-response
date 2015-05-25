@@ -42,17 +42,21 @@ module Elasticsearch
         def render_details(node)
           node.children.map do |child|
             render_node(child)
-          end.compact.join(" #{node.score_type} ")
+          end.compact.join(" #{node.operator} ")
         end
 
         def recursive_render_details(node)
           node.children.map do |child|
-            if child.children.any? && child.level <= @max
+            if can_render_details?(child)
               wrap_paren(recursive_render_details(child))
             else
               render_node(child)
             end
-          end.compact.join(" #{node.score_type} ")
+          end.compact.join(" #{node.operator} ")
+        end
+
+        def can_render_details?(node)
+          node.children.any? && node.level <= @max && node.type != "func"
         end
 
         def render_node(node)

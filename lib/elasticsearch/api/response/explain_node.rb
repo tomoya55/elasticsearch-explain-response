@@ -13,8 +13,12 @@ module Elasticsearch
           @children = []
         end
 
-        def score_type
-          description.score_type
+        def operator
+          description.operator
+        end
+
+        def type
+          description.type
         end
       end
     end

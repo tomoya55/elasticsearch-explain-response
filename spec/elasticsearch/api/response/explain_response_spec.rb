@@ -36,7 +36,7 @@ describe Elasticsearch::API::Response::ExplainResponse do
     end
 
     it "returns summary of explain in line" do
-      expect(subject).to eq("0.05 = (0.43(queryWeight) x 0.25(fieldWeight) x 10.0) x 0.5(coord(1/2)) x 1.0(queryBoost)")
+      expect(subject).to eq("0.05 = (0.43(queryWeight) x 0.25(fieldWeight) x 10.0 x 0.99) x 0.5(coord(1/2)) x 1.0(queryBoost)")
     end
   end
 
@@ -56,7 +56,7 @@ describe Elasticsearch::API::Response::ExplainResponse do
         "0.05 = 0.11 x 0.5(coord(1/2)) x 1.0(queryBoost)",
         "  0.11 = 0.11(weight(_all:smith))",
         "    0.11 = 0.11(score)",
-        "      0.11 = 0.43(queryWeight) x 0.25(fieldWeight) x 10.0"
+        "      0.11 = 0.43(queryWeight) x 0.25(fieldWeight) x 10.0 x 0.99"
       ]
     end
 
@@ -64,15 +64,16 @@ describe Elasticsearch::API::Response::ExplainResponse do
       let(:max) { 4 }
 
       it "returns summary of explain in lines" do
-        expect(subject).to eq [
+        expect(subject).to match_array([
           "0.05 = 0.11 x 0.5(coord(1/2)) x 1.0(queryBoost)",
           "  0.11 = 0.11(weight(_all:smith))",
           "    0.11 = 0.11(score)",
-          "      0.11 = 0.43(queryWeight) x 0.25(fieldWeight) x 10.0",
+          "      0.11 = 0.43(queryWeight) x 0.25(fieldWeight) x 10.0 x 0.99",
           "        0.43 = 1.0(idf(2/3)) x 0.43(queryNorm)",
-          "        0.25 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm)",
-          "        10.0 = 1.0(match(name.raw:smith))) x 10.0(boost)"
-        ]
+          "        0.25 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm(doc=0))",
+          "        10.0 = 1.0(match(name.raw:smith))) x 10.0(boost)",
+          "        0.99 = 1.0(match(*:*)) x 0.99(func(published_at))"
+        ])
       end
     end
   end
