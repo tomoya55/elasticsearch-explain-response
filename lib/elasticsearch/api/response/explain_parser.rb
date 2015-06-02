@@ -45,11 +45,12 @@ module Elasticsearch
             type =  "score"
             operation = "score"
             operator = "x"
-          when /\Amatch filter\: (?:cache\()?(?:\w+\()?([\w\.\*]+)\:([^\)]+)\)*\z/
+          when /\Amatch filter\: (?:cache\()?(?:(?<op>\w+)\()*(?<f>[\w\.\*]+)\:(?<v>[^\)]+)\)*\z/
             type = "match"
             operation = "match"
-            field = $1
-            value = $2
+            operation += ".#{$~[:op]}" if $~[:op] && !%w[QueryWrapperFilter].include?($~[:op])
+            field = $~[:f]
+            value = $~[:v]
           when /\AFunction for field ([\w\_]+)\:\z/
             type = "func"
             operation = "func"
