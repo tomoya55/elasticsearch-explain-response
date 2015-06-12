@@ -45,7 +45,7 @@ module Elasticsearch
             type =  "score"
             operation = "score"
             operator = "x"
-          when /\Amatch filter\: (?:cache\()?(?:(?<op>\w+)\()*(?<f>[\w\.\*]+)\:(?<v>[^\)]+)\)*\z/
+          when /\Amatch filter\: (?:cache\()?(?:(?<op>[\w]+)\()*(?<f>.+)\:(?<v>[^\)]+)\)*\z/
             type = "match"
             operation = "match"
             operation += ".#{$~[:op]}" if $~[:op] && !%w[QueryWrapperFilter].include?($~[:op])
