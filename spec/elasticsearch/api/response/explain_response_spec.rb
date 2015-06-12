@@ -45,7 +45,7 @@ describe Elasticsearch::API::Response::ExplainResponse do
       end
 
       it "returns summary of explain in line" do
-        expect(subject).to eq("887.19 = ((10.0(match(name:hawaii)) x 10.0(match(name:guam)) x 3.0(match(with_beach:T)) x 0.99(func(updated_at)) x 3.0(match(region_id:[3 TO 3]))) min 3.4e+38) x 1.0(queryBoost)")
+        expect(subject).to eq("887.19 = ((10.0(match(name:hawaii)) x 10.0(match(name:guam)) x 0.7(match(name:\"new caledonia\" (+(name:new name:nueva) +name:caledonia)) x 3.0(match(with_beach:T)) x 0.99(func(updated_at)) x 3.0(match(region_id:[3 TO 3]))) min 3.4e+38) x 1.0(queryBoost)")
       end
     end
   end
