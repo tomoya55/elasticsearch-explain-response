@@ -52,10 +52,11 @@ describe Elasticsearch::API::Response::ExplainResponse do
 
   describe "#render" do
     let(:response) do
-      described_class.new(fake_response["explanation"], max: max, colorize: false)
+      described_class.new(fake_response["explanation"], max: max, colorize: false, plain_score: plain_score)
     end
 
     let(:max) { nil }
+    let(:plain_score) { nil }
 
     subject do
       response.render.lines.map(&:rstrip)
@@ -84,6 +85,19 @@ describe Elasticsearch::API::Response::ExplainResponse do
           "          0.25 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm(doc=0))",
           "          10.0 = 10.0 x 1.0(match(name.raw:smith))",
           "          0.99 = 0.99(func(updated_at))"
+        ])
+      end
+    end
+
+    context "with plain_score = true" do
+      let(:plain_score) { true }
+
+      it "returns summary of explain in lines" do
+        expect(subject).to match_array([
+          "0.05 = 0.11 x 0.5(coord(1/2)) x 1.0(queryBoost)",
+          "  0.11 = 0.11 min 3.4028235e+38",
+          "    0.11 = 0.11(weight(_all:smith))",
+          "      0.11 = 0.11(score)"
         ])
       end
     end

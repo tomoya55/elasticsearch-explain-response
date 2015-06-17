@@ -9,6 +9,7 @@ module Elasticsearch
         def initialize(options = {})
           disable_colorization if options[:colorize] == false
           @max = options[:max] || 3
+          @plain_score = options[:plain_score] == true
         end
 
         def render(tree)
@@ -36,7 +37,7 @@ module Elasticsearch
         end
 
         def render_score(score)
-          value = if score > 1_000
+          value = if !@plain_score && score > 1_000
             sprintf("%1.2g", score.round(2))
           else
             score.round(2).to_s
