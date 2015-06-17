@@ -19,8 +19,8 @@ module Elasticsearch
           # Show scoring as a simple math formula
           # @example
           #    "1.0 = (1.0(termFreq=1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)"
-          def render_in_line(result, max: nil)
-            new(result["explanation"], max: max).render_in_line
+          def render_in_line(result, options = {})
+            new(result["explanation"], options).render_in_line
           end
 
           # Show scoring with indents
@@ -30,17 +30,17 @@ module Elasticsearch
           #       3.35 = 0.2 + 0.93 + 1.29 + 0.93
           #     54.3 = 54.3 min 3.4028234999999995e+38(maxBoost)
           #       54.3 = 2.0 x 10.0 x 3.0 x 0.91
-          def render(result, max: nil)
-            new(result["explanation"], max: max).render
+          def render(result, options = {})
+            new(result["explanation"], options).render
           end
         end
 
         attr_reader :explain
 
-        def initialize(explain, max: nil, colorize: true)
+        def initialize(explain, options = {})
           @explain = explain
           @indent = 0
-          @renderer = ExplainRenderer.new(max: max, colorize: colorize)
+          @renderer = ExplainRenderer.new({ colorize: true }.merge(options))
         end
 
         def render
