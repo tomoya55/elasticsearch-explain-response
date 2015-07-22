@@ -17,37 +17,41 @@ gem 'elasticsearch-explain-response'
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 Or install it yourself as:
-
-    $ gem install elasticsearch-explain-response
+    
+```
+$ gem install elasticsearch-explain-response
+```
 
 ## Usage
 
 ### Summarize the explanation in one line
 
-    ```
-    require 'elasticsearch'
-    client = Elasticsearch::Client.new
-    result = client.explain index: "megacorp", type: "employee", id: "1", q: "last_name:Smith"
-    puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).render_in_line
-    #=>
-    1.0 = (1.0(termFreq=1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)
-    ```
+   ```ruby
+   require 'elasticsearch'
+   client = Elasticsearch::Client.new
+   result = client.explain index: "megacorp", type: "employee", id: "1", q: "last_name:Smith"
+   puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).render_in_line
+   #=>
+   1.0 = (1.0(termFreq=1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)
+   ```
 
 ### Summarize the explanation in lines
 
-    ```
-    require 'elasticsearch'
-    client = Elasticsearch::Client.new
-    result = client.explain index: "megacorp", type: "employee", id: "1", q: "last_name:Smith"
-    puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).render
-    #=>
-    1.0 = 1.0(fieldWeight)
-      1.0 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)
-        1.0 = 1.0(termFreq=1.0)
-    ```
+   ```ruby
+   require 'elasticsearch'
+   client = Elasticsearch::Client.new
+   result = client.explain index: "megacorp", type: "employee", id: "1", q: "last_name:Smith"
+   puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).render
+   #=>
+   1.0 = 1.0(fieldWeight)
+     1.0 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)
+       1.0 = 1.0(termFreq=1.0)
+   ```
 
 ## Contributing
 
