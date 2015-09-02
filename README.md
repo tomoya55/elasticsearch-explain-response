@@ -5,7 +5,7 @@
 Parse Elasticsearch Explain Response and summarize it in a simple way.
 This gem is intended for developers working with Elasticsearch to debug search scores
 in a easier way.
-The current feature is very simple, but any sugguestions or feature requests are welcomed.
+The current feature is very simple, but any suggestions or feature requests are welcomed.
 
 ## Installation
 
