@@ -54,6 +54,7 @@ module Elasticsearch
             operation = "match"
             operation += ".#{$~[:op]}" if $~[:op] && !%w[QueryWrapperFilter].include?($~[:op])
             content = $~[:c]
+            content = content[0..-2] if content.end_with?(')')
             hash = tokenize_contents(content)
             field = hash.keys.join(", ")
             value = hash.values.join(", ")
