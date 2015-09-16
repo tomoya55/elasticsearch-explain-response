@@ -59,6 +59,10 @@ explanation:
               - value: 0.9857722
                 description: "exp(- MIN[Math.max(Math.abs(1.424917503E12(=doc value)\
                   \ - 1.432308964176E12(=origin))) - 0.0(=offset), 0)] * 1.938722193962471E-12)"
+          - value: 5.9284687
+            description: "script score function, computed with script:\"def val\
+              \ = factor * log(sqrt(doc['popularity'].value)\
+              \ + 1) + 1\" and parameters: \n{factor=1.0}"
     - value: 3.4028235E+38
       description: "maxBoost"
   - value: 0.5
