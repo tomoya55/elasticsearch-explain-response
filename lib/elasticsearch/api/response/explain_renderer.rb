@@ -10,6 +10,7 @@ module Elasticsearch
           disable_colorization if options[:colorize] == false
           @max = options[:max] || 3
           @plain_score = options[:plain_score] == true
+          @show_values = options[:show_values] == true
         end
 
         def render(tree)
@@ -108,7 +109,11 @@ module Elasticsearch
           text = ''
           text = description.operation if description.operation
           if description.field && description.value
-            text += "(#{field(description.field)}:#{value(description.value)})"
+            if @show_values
+              text += "(#{field(description.field)}:#{value(description.value)})"
+            else
+              text += "(#{field(description.field)})"
+            end
           elsif description.field
             text += "(#{field(description.field)})"
           end

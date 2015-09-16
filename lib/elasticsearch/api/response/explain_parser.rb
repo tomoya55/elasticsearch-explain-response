@@ -1,7 +1,11 @@
+require "elasticsearch/api/response/string_helper"
+
 module Elasticsearch
   module API
     module Response
       class ExplainParser
+        include StringHelper
+
         def parse(explain_tree)
           root = create_node(explain_tree, level: 0)
           parse_details(root)
@@ -45,12 +49,15 @@ module Elasticsearch
             type =  "score"
             operation = "score"
             operator = "x"
-          when /\Amatch filter\: (?:cache\()?(?:(?<op>[\w]+)\()*(?<f>.+)\:(?<v>[^\)]+)\)*\z/
+          when /\Amatch filter\: (?:cache\()?(?:(?<op>[\w]+)\()*(?<c>.+)\)*\z/
             type = "match"
             operation = "match"
             operation += ".#{$~[:op]}" if $~[:op] && !%w[QueryWrapperFilter].include?($~[:op])
-            field = $~[:f]
-            value = $~[:v]
+            content = $~[:c]
+            content = content[0..-2] if content.end_with?(')')
+            hash = tokenize_contents(content)
+            field = hash.keys.join(", ")
+            value = hash.values.join(", ")
           when /\AFunction for field ([\w\_]+)\:\z/
             type = "func"
             operation = "func"
@@ -70,6 +77,15 @@ module Elasticsearch
             /\Afunction score\, score mode \[multiply\]\z/
             type = "func score"
             operator = "x"
+          when /\Ascript score function\, computed with script:\"(?<s>.+)\"\s*(?:and parameters:\s*(?<p>.+))?/m
+            type = "script"
+            operation = "script"
+            script, param = $~[:s], $~[:p]
+            script = script.gsub("\n", '')
+            script = "\"#{script}\""
+            param.gsub!("\n", '') if param
+            field = script.scan(/doc\[\'([\w\.]+)\'\]/).flatten.uniq.compact.join(" ")
+            value = [script, param].join(" ")
           when "static boost factor", "boostFactor"
             type = "boost"
             operation = "boost"
@@ -92,8 +108,6 @@ module Elasticsearch
             type = description
             operation = description
           end
-
-          # binding.pry if operator.nil?
 
           Description.new(
             raw: description,
