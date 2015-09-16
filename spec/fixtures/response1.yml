@@ -63,6 +63,9 @@ explanation:
             description: "script score function, computed with script:\"def val\
               \ = factor * log(sqrt(doc['popularity'].value)\
               \ + 1) + 1\" and parameters: \n{factor=1.0}"
+          - value: 1.0
+            description: "ConstantScore(BooleanFilter(+BooleanFilter(+QueryWrapperFilter(name.raw:smith\
+                    \ city:smith)) +cache(approved:T))), product of:"
     - value: 3.4028235E+38
       description: "maxBoost"
   - value: 0.5

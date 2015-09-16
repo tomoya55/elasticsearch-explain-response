@@ -86,6 +86,9 @@ module Elasticsearch
             param.gsub!("\n", '') if param
             field = script.scan(/doc\[\'([\w\.]+)\'\]/).flatten.uniq.compact.join(" ")
             value = [script, param].join(" ")
+          when /\AConstantScore\(.+\), product of\:\z/
+            type = "constant"
+            operation = "constant"
           when "static boost factor", "boostFactor"
             type = "boost"
             operation = "boost"

@@ -41,7 +41,7 @@ describe Elasticsearch::API::Response::ExplainResponse do
       end
 
       it "returns summary of explain in line" do
-        expect(subject).to eq("0.05 = ((1.0(idf(2/3)) x 0.43(queryNorm)) x (1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm(doc=0))) x 10.0(match(name.raw:smith)) x 0.99(func(updated_at)) x 5.93(script(popularity:\"def val = factor * log(sqrt(doc['popularity'].value) + 1) + 1\" {factor=1.0})) min 3.4e+38) x 0.5(coord(1/2)) x 1.0(queryBoost)")
+        expect(subject).to eq("0.05 = ((1.0(idf(2/3)) x 0.43(queryNorm)) x (1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm(doc=0))) x 10.0(match(name.raw:smith)) x 0.99(func(updated_at)) x 5.93(script(popularity:\"def val = factor * log(sqrt(doc['popularity'].value) + 1) + 1\" {factor=1.0})) x 1.0(constant) min 3.4e+38) x 0.5(coord(1/2)) x 1.0(queryBoost)")
       end
 
       context "with fake_response2" do
@@ -61,7 +61,7 @@ describe Elasticsearch::API::Response::ExplainResponse do
       end
 
       it "returns summary of explain in line" do
-        expect(subject).to eq("0.05 = ((1.0(idf(2/3)) x 0.43(queryNorm)) x (1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm(doc=0))) x 10.0(match(name.raw)) x 0.99(func(updated_at)) x 5.93(script(popularity)) min 3.4e+38) x 0.5(coord(1/2)) x 1.0(queryBoost)")
+        expect(subject).to eq("0.05 = ((1.0(idf(2/3)) x 0.43(queryNorm)) x (1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm(doc=0))) x 10.0(match(name.raw)) x 0.99(func(updated_at)) x 5.93(script(popularity)) x 1.0(constant) min 3.4e+38) x 0.5(coord(1/2)) x 1.0(queryBoost)")
       end
 
       context "with fake_response2" do
@@ -110,7 +110,7 @@ describe Elasticsearch::API::Response::ExplainResponse do
             "  0.11 = 0.11 min 3.4e+38",
             "    0.11 = 0.11(weight(_all:smith))",
             "      0.11 = 0.11(score)",
-            "        0.11 = 0.43(queryWeight) x 0.25(fieldWeight) x 10.0 x 0.99 x 5.93(script(popularity:\"def val = factor * log(sqrt(doc['popularity'].value) + 1) + 1\" {factor=1.0}))",
+            "        0.11 = 0.43(queryWeight) x 0.25(fieldWeight) x 10.0 x 0.99 x 5.93(script(popularity:\"def val = factor * log(sqrt(doc['popularity'].value) + 1) + 1\" {factor=1.0})) x 1.0(constant)",
             "          0.43 = 1.0(idf(2/3)) x 0.43(queryNorm)",
             "          0.25 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 0.25(fieldNorm(doc=0))",
             "          10.0 = 10.0 x 1.0(match(name.raw:smith))",
