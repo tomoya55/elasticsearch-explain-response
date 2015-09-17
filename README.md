@@ -43,14 +43,29 @@ puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).re
 ### Summarize the explanation in lines
 
 ```ruby
-require 'elasticsearch'
-client = Elasticsearch::Client.new
-result = client.explain index: "megacorp", type: "employee", id: "1", q: "last_name:Smith"
 puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).render
 #=>
 1.0 = 1.0(fieldWeight)
   1.0 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)
     1.0 = 1.0(termFreq=1.0)
+```
+
+### Get the summarized explanation as a Hash
+
+```ruby
+puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).result
+#=>
+{ :score=>0.8467586,
+  :type=>"fieldWeight",
+  :operator=>"x",
+  :operation=>"fieldWeight",
+  :children=>
+   [{:score=>1.7320508,
+     :type=>"tf",
+     :operation=>"tf(3.0)",
+     :children=>[{:score=>3.0, :type=>"termFreq=3.0", :operation=>"termFreq=3.0"}]},
+    {:score=>4.469726, :type=>"idf", :operation=>"idf(382/12305)"},
+    {:score=>0.109375, :type=>"fieldNorm(doc=1035)", :operation=>"fieldNorm(doc=1035)"}]}
 ```
 
 ## Contributing

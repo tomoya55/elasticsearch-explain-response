@@ -12,6 +12,16 @@ module Elasticsearch
           @field = field
           @value = value
         end
+
+        def as_json
+          {
+            type: type,
+            operator: operator,
+            operation: operation,
+            field: field,
+            value: value
+          }.delete_if { |k, v| v.nil? }
+        end
       end
     end
   end

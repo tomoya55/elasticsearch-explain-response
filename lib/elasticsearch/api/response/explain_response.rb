@@ -2,6 +2,7 @@ require "elasticsearch/api/response/explain_node"
 require "elasticsearch/api/response/description"
 require "elasticsearch/api/response/explain_parser"
 require "elasticsearch/api/response/explain_renderer"
+require "elasticsearch/api/response/explain_formatter"
 
 module Elasticsearch
   module API
@@ -19,8 +20,8 @@ module Elasticsearch
           # Show scoring as a simple math formula
           # @example
           #    "1.0 = (1.0(termFreq=1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)"
-          def render_in_line(result, options = {})
-            new(result["explanation"], options).render_in_line
+          def render_in_line(response, options = {})
+            new(response["explanation"], options).render_in_line
           end
 
           # Show scoring with indents
@@ -30,8 +31,13 @@ module Elasticsearch
           #       3.35 = 0.2 + 0.93 + 1.29 + 0.93
           #     54.3 = 54.3 min 3.4028234999999995e+38(maxBoost)
           #       54.3 = 2.0 x 10.0 x 3.0 x 0.91
-          def render(result, options = {})
-            new(result["explanation"], options).render
+          def render(response, options = {})
+            new(response["explanation"], options).render
+          end
+
+          # Return parsed result in Hash
+          def result(response, options = {})
+            new(response["explanation"], options).result
           end
         end
 
@@ -51,6 +57,11 @@ module Elasticsearch
         def render_in_line
           parse_details
           @renderer.render_in_line(@root)
+        end
+
+        def result(options = {})
+          parse_details
+          ExplainFormatter.new(options).format(@root)
         end
 
         private
