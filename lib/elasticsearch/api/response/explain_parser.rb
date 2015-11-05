@@ -77,6 +77,9 @@ module Elasticsearch
             /\Afunction score\, score mode \[multiply\]\z/
             type = "func score"
             operator = "x"
+          when /\Afunction score\, score mode \[sum\]\z/
+            type = "func score"
+            operator = "+"
           when /\Ascript score function\, computed with script:\"(?<s>.+)\"\s*(?:and parameters:\s*(?<p>.+))?/m
             type = "script"
             operation = "script"
