@@ -134,6 +134,20 @@ describe Elasticsearch::API::Response::ExplainResponse do
     end
   end
 
+  describe "#render_as_hash" do
+    let(:response) do
+      described_class.new(fake_response["explanation"], colorize: false)
+    end
+
+    subject do
+      response.render_as_hash
+    end
+
+    it "returns the explain response as a hash" do
+      expect(subject).to be_a_kind_of(Hash)
+    end
+  end
+
   describe "colorization" do
     let(:response) do
       described_class.new(fake_response["explanation"])
