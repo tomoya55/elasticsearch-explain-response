@@ -25,6 +25,7 @@ module Elasticsearch
 
         def recursive_render(node)
           return if node.level > @max
+          # binding.pry if node.score > 0.9 && node.score < 1.0
           render_result(node) if node.details.any?
           node.children.each do |child|
             recursive_render(child)
@@ -47,43 +48,17 @@ module Elasticsearch
         end
 
         def render_details(node)
-          case node.type
-          when "func score"
-            render_boost_match_details(node)
+          if node.has_children?
+            node.children.map(&method(:render_node)).compact.join(" #{node.operator} ")
           else
-            render_node_details(node)
-          end
-        end
-
-        def render_node_details(node)
-          node.children.map do |child|
-            check_node = block_given? ? yield(child) : true
-            check_node && render_node(child) || nil
-          end.compact.join(" #{node.operator} ")
-        end
-
-        def render_boost_match_details(node)
-          match = node.children.find {|c| c.type == "match" }
-          boost = node.children.find {|c| c.type == "boost" }
-          if match && boost
-            [boost.score, render_node(match)].join(" x ")
-          else
-            render_node_details(node) {|n| !n.match_all? }
+            render_node(node)
           end
         end
 
         def recursive_render_details(node)
           details = node.children.map do |child|
             if child.children.any? && child.level <= @max
-              if child.func?
-                render_node(child)
-              elsif child.children[0].match? && child.children[1].boost?
-                match = child.children[0]
-                boost = child.children[1]
-                "#{render_score(boost.score)}(#{render_description(match.description)})"
-              else
-                recursive_render_details(child)
-              end
+              recursive_render_details(child)
             else
               if !child.match_all?
                 render_node(child)

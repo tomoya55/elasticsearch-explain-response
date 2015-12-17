@@ -3,6 +3,7 @@ require "elasticsearch/api/response/explain_node"
 require "elasticsearch/api/response/description"
 require "elasticsearch/api/response/explain_parser"
 require "elasticsearch/api/response/explain_renderer"
+require "elasticsearch/api/response/explain_trimmer"
 
 module Elasticsearch
   module API
@@ -34,13 +35,18 @@ module Elasticsearch
           def render(result, options = {})
             new(result["explanation"], options).render
           end
+
+          def result_as_hash(result, options = {})
+            new(result["explanation"], options).render_as_hash
+          end
         end
 
-        attr_reader :explain
+        attr_reader :explain, :trim
 
         def initialize(explain, options = {})
           @explain = explain
           @indent = 0
+          @trim = options.has_key?(:trim) ? options.delete(:trim) : true
           @renderer = ExplainRenderer.new({ colorize: true }.merge(options))
         end
 
@@ -62,7 +68,11 @@ module Elasticsearch
         private
 
         def parse_details
-          @root ||= ExplainParser.new.parse(explain)
+          @root ||= begin
+            tree = ExplainParser.new.parse(explain)
+            tree = ExplainTrimmer.new.trim(tree) if trim
+            tree
+          end
         end
       end
     end
