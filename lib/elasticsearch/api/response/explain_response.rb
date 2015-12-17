@@ -1,9 +1,10 @@
-require "elasticsearch/api/response/renderers/hash_renderer"
 require "elasticsearch/api/response/explain_node"
 require "elasticsearch/api/response/description"
 require "elasticsearch/api/response/explain_parser"
-require "elasticsearch/api/response/explain_renderer"
 require "elasticsearch/api/response/explain_trimmer"
+require "elasticsearch/api/response/renderers/standard_renderer"
+require "elasticsearch/api/response/renderers/inline_renderer"
+require "elasticsearch/api/response/renderers/hash_renderer"
 
 module Elasticsearch
   module API
@@ -41,27 +42,26 @@ module Elasticsearch
           end
         end
 
-        attr_reader :explain, :trim
+        attr_reader :explain, :trim, :rendering_options
 
         def initialize(explain, options = {})
           @explain = explain
           @indent = 0
           @trim = options.has_key?(:trim) ? options.delete(:trim) : true
-          @renderer = ExplainRenderer.new({ colorize: true }.merge(options))
+          @rendering_options = options
+
+          parse_details
         end
 
         def render
-          parse_details
-          @renderer.render(@root)
+          Renderers::StandardRenderer.new({ colorize: true }.merge(rendering_options)).render(@root)
         end
 
         def render_in_line
-          parse_details
-          @renderer.render_in_line(@root)
+          Renderers::InlineRenderer.new({ colorize: true }.merge(rendering_options)).render(@root)
         end
 
         def render_as_hash
-          parse_details
           Renderers::HashRenderer.new.render(@root)
         end
 
