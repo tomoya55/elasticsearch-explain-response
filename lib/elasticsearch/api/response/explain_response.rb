@@ -1,3 +1,4 @@
+require "elasticsearch/api/response/renderers/hash_renderer"
 require "elasticsearch/api/response/explain_node"
 require "elasticsearch/api/response/description"
 require "elasticsearch/api/response/explain_parser"
@@ -51,6 +52,11 @@ module Elasticsearch
         def render_in_line
           parse_details
           @renderer.render_in_line(@root)
+        end
+
+        def render_as_hash
+          parse_details
+          Renderers::HashRenderer.new.render(@root)
         end
 
         private
