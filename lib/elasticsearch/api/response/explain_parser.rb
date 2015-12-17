@@ -95,7 +95,7 @@ module Elasticsearch
             when "static boost factor", "boostFactor"
               type = "boost"
               operation = "boost"
-            when "product of:", "[multiply]"
+            when /product\sof\:?/, "[multiply]"
               type = "product"
               operation = "product"
               operator = "x"
@@ -105,7 +105,7 @@ module Elasticsearch
             when "Math.max of"
               type = "max"
               operator = "max"
-            when "sum of:"
+            when /sum of\:?/
               type = "sum"
               operator = "+"
             when "maxBoost"
