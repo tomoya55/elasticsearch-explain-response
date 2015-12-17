@@ -33,7 +33,7 @@ explanation:
           details:
           - value: 10.0
             description: "boostFactor"
-      - value: 1.0
+      - value: 0.7
         description: "function score, product of:"
         details:
         - value: 1.0

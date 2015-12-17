@@ -3,8 +3,6 @@ module Elasticsearch
     module Response
       module Renderers
         class HashRenderer
-          def initialize
-          end
 
           def render(tree)
             recursive_render(tree)
@@ -16,24 +14,24 @@ module Elasticsearch
 
           private
 
-          def format_node(node)
-            node.as_json.tap do |hash|
-              if node.has_children?
-                children = format_children(node, hash)
-                hash[:children] = children if children.any?
+            def format_node(node)
+              node.as_json.tap do |hash|
+                if node.has_children?
+                  children = format_children(node, hash)
+                  hash[:children] = children if children.any?
+                end
               end
             end
-          end
 
-          def format_children(node, hash)
-            node.children.map(&method(:format_node)).compact.tap do |children|
-              remove_dup(children, hash)
+            def format_children(node, hash)
+              node.children.map(&method(:format_node)).compact.tap do |children|
+                remove_dup(children, hash)
+              end
             end
-          end
 
-          def remove_dup(collection, target)
-            collection.delete_if {|elm| elm == target }
-          end
+            def remove_dup(collection, target)
+              collection.delete_if {|elm| elm == target }
+            end
         end
       end
     end
