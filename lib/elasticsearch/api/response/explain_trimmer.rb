@@ -6,11 +6,7 @@ module Elasticsearch
         end
 
         def trim(tree)
-          recursive_trim(tree)
-        end
-
-        def recursive_trim(node)
-          trim_node(node) if node.details.any?
+          trim_node(tree)
         end
 
         private

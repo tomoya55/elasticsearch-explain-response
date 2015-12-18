@@ -45,7 +45,7 @@ module Elasticsearch
         attr_reader :explain, :trim, :rendering_options
 
         def initialize(explain, options = {})
-          @explain = explain
+          @explain = explain || {}
           @indent = 0
           @trim = options.has_key?(:trim) ? options.delete(:trim) : true
           @rendering_options = options
