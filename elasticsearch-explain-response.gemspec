@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "elasticsearch-explain-response"
-  spec.version       = "0.2.2"
+  spec.version       = "0.2.3"
   spec.authors       = ["Tomoya Hirano"]
   spec.email         = ["hiranotomoya@gmail.com"]
   spec.summary       = %q{Parser for Elasticserach Explain response}
