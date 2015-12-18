@@ -20,6 +20,17 @@ module Elasticsearch
           @children = []
         end
 
+        def clone_with(attributes = {})
+          node = self.class.new(
+            score: attributes[:score] || score,
+            description: attributes[:description] || description,
+            details: attributes[:details] || details,
+            level: attributes[:level] || level
+          )
+          node.children = attributes[:children] || children
+          node
+        end
+
         def score_one?
           score == 1.0
         end
