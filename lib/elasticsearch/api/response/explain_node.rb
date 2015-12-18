@@ -1,7 +1,10 @@
+require "elasticsearch/api/response/renderable"
+
 module Elasticsearch
   module API
     module Response
       class ExplainNode
+        include Renderable
         extend Forwardable
 
         attr_reader :score, :description, :details, :level
