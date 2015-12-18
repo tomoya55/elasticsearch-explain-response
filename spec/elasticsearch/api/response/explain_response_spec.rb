@@ -7,24 +7,27 @@ describe Elasticsearch::API::Response::ExplainResponse do
   end
 
   describe '.render_in_line' do
-    subject do
-      described_class.render_in_line(fake_response)
+    context "with explain" do
+      it "returns summary" do
+        result = described_class.render_in_line(fake_response)
+        expect(result).not_to be_empty
+      end
     end
 
-    it "returns summary" do
-      expect(subject).not_to be_empty
+    context "with empty explain" do
+      it "returns summary" do
+        result = described_class.render_in_line({}, colorize: false)
+        expect(result).to eq("0.0 = ")
+      end
     end
 
     context "with block" do
-      subject do
-        described_class.render_in_line(fake_response, colorize: false) do |tree|
+      it "changes the tree before rendering" do
+        result = described_class.render_in_line(fake_response, colorize: false) do |tree|
           tree.children = tree.children[0..1]
           tree
         end
-      end
-
-      it "changes the tree before rendering" do
-        expect(subject).to eq("0.05 = (0.11(score) x 0.5(coord(1/2)))")
+        expect(result).to eq("0.05 = (0.11(score) x 0.5(coord(1/2)))")
       end
     end
   end
