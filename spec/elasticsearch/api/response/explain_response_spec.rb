@@ -14,6 +14,19 @@ describe Elasticsearch::API::Response::ExplainResponse do
     it "returns summary" do
       expect(subject).not_to be_empty
     end
+
+    context "with block" do
+      subject do
+        described_class.render_in_line(fake_response, colorize: false) do |tree|
+          tree.children = tree.children[0..1]
+          tree
+        end
+      end
+
+      it "changes the tree before rendering" do
+        expect(subject).to eq("0.05 = (0.11(score) x 0.5(coord(1/2)))")
+      end
+    end
   end
 
   describe '.render' do

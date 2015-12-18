@@ -22,8 +22,8 @@ module Elasticsearch
           # Show scoring as a simple math formula
           # @example
           #    "1.0 = (1.0(termFreq=1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)"
-          def render_in_line(result, options = {})
-            new(result["explanation"], options).render_in_line
+          def render_in_line(result, options = {}, &block)
+            new(result["explanation"], options).render_in_line(&block)
           end
 
           # Show scoring with indents
@@ -33,8 +33,8 @@ module Elasticsearch
           #       3.35 = 0.2 + 0.93 + 1.29 + 0.93
           #     54.3 = 54.3 min 3.4028234999999995e+38(maxBoost)
           #       54.3 = 2.0 x 10.0 x 3.0 x 0.91
-          def render(result, options = {})
-            new(result["explanation"], options).render
+          def render(result, options = {}, &block)
+            new(result["explanation"], options).render(&block)
           end
 
           def result_as_hash(result, options = {})
@@ -53,16 +53,16 @@ module Elasticsearch
           parse_details
         end
 
-        def render
-          Renderers::StandardRenderer.new({ colorize: true }.merge(rendering_options)).render(@root)
+        def render(&block)
+          @root.render(rendering_options, &block)
         end
 
-        def render_in_line
-          Renderers::InlineRenderer.new({ colorize: true }.merge(rendering_options)).render(@root)
+        def render_in_line(&block)
+          @root.render_in_line(rendering_options, &block)
         end
 
-        def render_as_hash
-          Renderers::HashRenderer.new.render(@root)
+        def render_as_hash(&block)
+          @root.render_as_hash(rendering_options, &block)
         end
 
         private
