@@ -13,6 +13,10 @@ module Elasticsearch
 
           def trim_node(node)
             case
+            when node.product?
+              trim_product_node(node)
+            when node.score?
+              trim_score_node(node)
             when node.func_score?
               trim_func_score_node(node)
             when node.min?
@@ -22,15 +26,42 @@ module Elasticsearch
             end
           end
 
+          def trim_score_node(node)
+            case node.children.size
+            when 1
+              return trim_node(node.children.first)
+            else
+              trim_default_node(node)
+            end
+          end
+
+          def trim_product_node(node)
+            case node.children.size
+            when 2
+              constant = node.children.find { |n| n.constant? }
+              if constant
+                other = (node.children - [constant])[0]
+                if constant.score_one? && other.score == node.score
+                  return trim_node(other)
+                end
+              end
+            end
+
+            trim_default_node(node)
+          end
+
           def trim_func_score_node(node)
             case node.children.size
             when 2
-              match = node.children.find(&:match?)
-              if match
-                other = (node.children - [match])[0]
-                if match.score_one? && other.score == node.score
-                  entity = match.field == "*" ? other : match
-                  return merge_function_score_node(node, entity)
+              boost = node.children.find { |n| n.match? || n.query_boost? }
+              if boost
+                other = (node.children - [boost])[0]
+                if boost.score_one? && other.score == node.score
+                  other = trim_node(other) if other.has_children?
+                  entity = boost.field == "*" ? other : boost
+                  new_node = merge_function_score_node(node, entity)
+                  new_node.children = other.children
+                  return trim_node(new_node)
                 end
               end
             end

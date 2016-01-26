@@ -35,12 +35,24 @@ module Elasticsearch
           score == 1.0
         end
 
+        def score?
+          type == "score"
+        end
+
         def min?
           type == "min"
         end
 
         def func?
           type == "func"
+        end
+
+        def product?
+          type == "product"
+        end
+
+        def constant?
+          type == "constant"
         end
 
         def match?
