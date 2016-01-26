@@ -92,6 +92,9 @@ module Elasticsearch
             when /\AConstantScore\(.+\), product of\:\z/
               type = "constant"
               operation = "constant"
+            when /\Aconstant score/
+              type = "constant"
+              operation = "constant"
             when "static boost factor", "boostFactor"
               type = "boost"
               operation = "boost"
@@ -110,6 +113,9 @@ module Elasticsearch
               operator = "+"
             when "maxBoost"
               type = "maxBoost"
+            when /_score\:\s*/
+              type = "score"
+              operation = "score"
             else
               type = description
               operation = description
