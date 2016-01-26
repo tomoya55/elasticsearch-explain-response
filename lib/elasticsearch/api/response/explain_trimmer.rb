@@ -17,6 +17,8 @@ module Elasticsearch
               trim_product_node(node)
             when node.score?
               trim_score_node(node)
+            when node.func?, node.boost?
+              trim_children_node(node)
             when node.func_score?
               trim_func_score_node(node)
             when node.min?
@@ -30,6 +32,16 @@ module Elasticsearch
             case node.children.size
             when 1
               return trim_node(node.children.first)
+            else
+              trim_default_node(node)
+            end
+          end
+
+          def trim_children_node(node)
+            case node.children.size
+            when 1
+              node.children = []
+              trim_node(node)
             else
               trim_default_node(node)
             end
@@ -58,8 +70,7 @@ module Elasticsearch
                 other = (node.children - [boost])[0]
                 if boost.score_one? && other.score == node.score
                   other = trim_node(other) if other.has_children?
-                  entity = boost.field == "*" ? other : boost
-                  new_node = merge_function_score_node(node, entity)
+                  new_node = merge_function_score_node(node, boost, other)
                   new_node.children = other.children
                   return trim_node(new_node)
                 end
@@ -82,7 +93,9 @@ module Elasticsearch
             trim_node(child)
           end
 
-          def merge_function_score_node(current, entity)
+          def merge_function_score_node(current, boost, target)
+            entity = boost.field == "*" || boost.field.nil? ? target : boost
+
             ExplainNode.new(
               score: current.score,
               level: current.level,

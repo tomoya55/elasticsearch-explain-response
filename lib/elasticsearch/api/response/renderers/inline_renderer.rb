@@ -13,7 +13,7 @@ module Elasticsearch
           private
 
             def recursive_render_details(node)
-              details = node.children.map do |child|
+              details = node.children.map { |child|
                 if child.children.any? && child.level <= @max
                   recursive_render_details(child)
                 else
@@ -21,7 +21,7 @@ module Elasticsearch
                     render_node(child)
                   end
                 end
-              end.compact
+              }.compact
 
               if details.size > 1
                 wrap_paren(details.join(" #{node.operator} "))
