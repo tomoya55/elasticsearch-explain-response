@@ -1,5 +1,4 @@
 require 'spec_helper'
-require "pry"
 
 describe Elasticsearch::API::Response::ExplainResponse do
   let(:fake_response) do
