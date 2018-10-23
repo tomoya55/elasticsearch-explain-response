@@ -49,7 +49,7 @@ custom_explainer.render_in_line
 ### Summarize the explanation in lines
 
 ```ruby
-custom_explainer.render_in_line.render
+custom_explainer.render
 #=>
 1.0 = 1.0(fieldWeight)
   1.0 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)
@@ -58,8 +58,42 @@ custom_explainer.render_in_line.render
 
 ### Customize your rendering
 
+#### Translate your custom scripts
+
 ```ruby
-explain_response.render(
+custom_painless_script = <<~PAINLESS.delete("\n")
+  (
+    doc['response_rate'].value > 0.5 &&
+    doc['unavailable_until'].empty
+  ) ? 1 : 0)
+PAINLESS
+
+custom_translator => (lambda do |value|
+  if value == 1
+    '1/1 Is available and good chance of reply'
+  else
+    '0/1 Not available or low chance of reply'
+  end
+end)
+
+script_translation_map = {
+  custom_painless_script => custom_translator
+}
+
+custom_explainer = Elasticsearch::API::Response::ExplainResponse.new(
+  result["explanation"],
+  script_translation_map: script_translation_map
+)
+custom_explainer.render
+#=>
+0.1 = 0.1(script(Custom script:0/1 Not available or low chance of reply))
+
+```
+
+#### Change basic formatting
+
+```ruby
+custom_explainer.render(
   precision: 6  # 6 decimals
 )
 

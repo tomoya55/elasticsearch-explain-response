@@ -16,7 +16,7 @@ module Elasticsearch
             @max = options[:max] || 3
             @plain_score = options[:plain_score] == true
             @show_values = options[:show_values] == true
-            @precision = precision
+            @precision = options.delete(:precision) || 2
           end
 
           private
@@ -41,7 +41,7 @@ module Elasticsearch
               text = ''
               text = description.operation if description.operation
               if description.field && description.value
-                if @show_values
+                if @show_values || description.type == 'translated_script'
                   text += "(#{field(description.field)}:#{value(description.value)})"
                 else
                   text += "(#{field(description.field)})"

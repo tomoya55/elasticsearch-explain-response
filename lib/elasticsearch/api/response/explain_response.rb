@@ -70,7 +70,7 @@ module Elasticsearch
 
         def parse_details
           @root ||= begin
-            tree = ExplainParser.new.parse(explain, script_translation_map: @script_translation_map)
+            tree = ExplainParser.new(script_translation_map: @script_translation_map).parse(explain)
             tree = ExplainTrimmer.new.trim(tree) if trim
             tree
           end

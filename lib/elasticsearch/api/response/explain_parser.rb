@@ -92,17 +92,18 @@ module Elasticsearch
             type = "func score"
             operator = "+"
           when /\Ascript score function\, computed with script:\"(?<s>.+)\"\s*(?:and parameters:\s*(?<p>.+))?/m
-            type = "script"
             operation = "script"
             script, param = $~[:s], $~[:p]
             param.gsub!("\n", '') if param
             script = script.gsub("\n", '')
-            if (script_translator = @script_translation_map[code])
+            if (script_translator = translator_of_custom_script_function(script))
+              type = "translated_script"
+              field = 'Custom script'
               value = script_translator.call(node_value)
             else
+              type = "script"
               script = "\"#{script}\""
               field = script.scan(/doc\[\'([\w\.]+)\'\]/).flatten.uniq.compact.join(" ")
-
               value = [script, param].join(" ")
             end
           when /\AConstantScore\(.+\), product of\:\z/
@@ -145,6 +146,16 @@ module Elasticsearch
             field: field,
             value: value,
           )
+        end
+
+        # @param [String] ES script
+        #
+        # @return [Lambda]
+        # @yieldparam [Float] Associated ES score
+        #
+        def translator_of_custom_script_function(script)
+          code = script[/.*Code\='([^\,]*)\'/,1]
+          @script_translation_map[code]
         end
       end
     end
