@@ -7,11 +7,16 @@ module Elasticsearch
         class BaseRenderer
           include Helpers::ColorHelper
 
+          # @param [Hash] options
+          # @param options [Boolean] plain_score
+          # @param options [Boolean] show_values
+          # @param options [Integer] precision
           def initialize(options = {})
             disable_colorization if options[:colorize] == false
             @max = options[:max] || 3
             @plain_score = options[:plain_score] == true
             @show_values = options[:show_values] == true
+            @precision = precision
           end
 
           private
@@ -20,7 +25,7 @@ module Elasticsearch
               value = if !@plain_score && score > 1_000
                 sprintf("%1.2g", score.round(2))
               else
-                score.round(2).to_s
+                score.round(@precision).to_s
               end
               ansi(value, :magenta, :bright)
             end

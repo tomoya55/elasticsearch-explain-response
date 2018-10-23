@@ -29,13 +29,19 @@ $ gem install elasticsearch-explain-response
 
 ## Usage
 
-### Summarize the explanation in one line
+### Initialize the custom explainer
 
 ```ruby
 require 'elasticsearch'
 client = Elasticsearch::Client.new
 result = client.explain index: "megacorp", type: "employee", id: "1", q: "last_name:Smith"
-puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).render_in_line
+custom_explainer = Elasticsearch::API::Response::ExplainResponse.new(result["explanation"])
+```
+
+### Summarize the explanation in one line
+
+```ruby
+custom_explainer.render_in_line
 #=>
 1.0 = (1.0(termFreq=1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)
 ```
@@ -43,15 +49,19 @@ puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).re
 ### Summarize the explanation in lines
 
 ```ruby
-require 'elasticsearch'
-client = Elasticsearch::Client.new
-result = client.explain index: "megacorp", type: "employee", id: "1", q: "last_name:Smith"
-puts Elasticsearch::API::Response::ExplainResponse.new(result["explanation"]).render
+custom_explainer.render_in_line.render
 #=>
 1.0 = 1.0(fieldWeight)
   1.0 = 1.0(tf(1.0)) x 1.0(idf(2/3)) x 1.0(fieldNorm)
     1.0 = 1.0(termFreq=1.0)
 ```
+
+### Customize your rendering
+
+```ruby
+explain_response.render(
+  precision: 6  # 6 decimals
+)
 
 ## Contributing
 

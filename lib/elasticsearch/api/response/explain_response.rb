@@ -47,7 +47,8 @@ module Elasticsearch
         def initialize(explain, options = {})
           @explain = explain || {}
           @indent = 0
-          @trim = options.has_key?(:trim) ? options.delete(:trim) : true
+          @trim = options.key?(:trim) ? options.delete(:trim) : true
+          @script_translation_map = options.delete(:script_translation_map) || {}
           @rendering_options = options
 
           parse_details
@@ -69,7 +70,7 @@ module Elasticsearch
 
         def parse_details
           @root ||= begin
-            tree = ExplainParser.new.parse(explain)
+            tree = ExplainParser.new.parse(explain, script_translation_map: @script_translation_map)
             tree = ExplainTrimmer.new.trim(tree) if trim
             tree
           end
