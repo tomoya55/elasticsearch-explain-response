@@ -1,3 +1,4 @@
+require "forwardable"
 require "elasticsearch/api/response/renderable"
 
 module Elasticsearch
