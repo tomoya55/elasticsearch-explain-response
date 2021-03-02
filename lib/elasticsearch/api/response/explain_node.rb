@@ -1,12 +1,13 @@
 require "forwardable"
 require "elasticsearch/api/response/renderable"
+require 'forwardable'
 
 module Elasticsearch
   module API
     module Response
       class ExplainNode
         include Renderable
-        extend Forwardable
+        extend ::Forwardable
 
         attr_reader :score, :description, :details, :level
         attr_accessor :children

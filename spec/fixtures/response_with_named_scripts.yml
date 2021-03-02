@@ -1,0 +1,39 @@
+---
+_index: "megacorp"
+_type: "employee"
+_id: "1"
+matched: true
+explanation:
+  value: 0.1
+  description: "sum of:"
+  details:
+    - value: 0.1
+      description: "function score, product of:"
+      details:
+      - value: 0.1
+        description: "match filter: *:*"
+      - value: 1.0
+        description: "script score function, computed with script:\
+        \"Script{\
+          type=inline, \
+          lang='painless', \
+          idOrCode=\'(\
+            doc['response_rate'].value > 0.5 && \
+            doc['unavailable_until'].empty) ? 1 : 0)', \
+          options={}, params={}\
+        }\" and parameters: \\n{}"
+    - value: 0.0
+      description: "function score, product of:"
+      details:
+      - value: 0.1
+        description: "match filter: *:*"
+      - value: 0.0
+        description: "script score function, computed with script:\
+        \"Script{\
+          type=inline, \
+          lang='painless', \
+          idOrCode=\'(\
+            doc['response_rate'].value > 0.5 && \
+            doc['unavailable_until'].empty) ? 1 : 0)', \
+          options={}, params={}\
+        }\" and parameters: \\n{}"

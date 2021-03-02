@@ -174,4 +174,55 @@ describe Elasticsearch::API::Response::ExplainResponse do
       expect(subject).to include("\e[0m")
     end
   end
+
+  describe 'script translation map' do
+    let(:fake_response) do
+      fixture_load(:response_with_named_scripts)
+    end
+    let(:custom_script) do
+      <<~PAINLESS.delete("\n")
+        (doc['response_rate'].value > 0.5 &&
+         doc['unavailable_until'].empty
+        ) ? 1 : 0)
+      PAINLESS
+    end
+    let(:script_translation_map) do
+      {
+        custom_script => (lambda do |value|
+          if value == 1
+            '1/1 Is available and good chance of reply'
+          else
+            '0/1 Not available or low chance of reply'
+          end
+        end)
+      }
+    end
+
+    let(:response) do
+      described_class.new(fake_response["explanation"],
+        colorize: false,
+        script_translation_map: script_translation_map
+      )
+    end
+
+    subject do
+      response.render
+    end
+
+    context 'when the ES value indicates a low response/unavailable' do
+      let(:explanation) { fake_response['explanation'] }
+
+      it 'translate the script using the unavailable text' do
+        expect(subject).to include('0.0(script(Custom script:0/1 Not available or low chance of reply))')
+      end
+    end
+
+    context 'when the ES value indicates a good response rate + availability' do
+      let(:explanation) { fake_response['explanation'] }
+
+      it 'translate the script using the available text' do
+        expect(subject).to include('1.0(script(Custom script:1/1 Is available and good chance of reply))')
+      end
+    end
+  end
 end
