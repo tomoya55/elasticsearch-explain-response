@@ -1,3 +1,59 @@
-machine:
-  ruby:
-    version: 2.2.2
+version: 2.1
+executors:
+  ruby_25:
+    docker:
+      - image: circleci/ruby:2.5-node
+  ruby_26:
+    docker:
+      - image: circleci/ruby:2.6-node
+  ruby_27:
+    docker:
+      - image: circleci/ruby:2.7-node
+
+commands:
+  setup:
+    steps:
+      - run:
+          name: Update RubyGems
+          command: |
+            gem update --system
+            gem --version
+      - run:
+          name: Install Bundler
+          command: |
+            gem install bundler
+            bundler --version
+            bundle config set path './vendor/bundle'
+      - run:
+          name: Install Depdendecies
+          command: |
+            bundle check || bundle install
+  run_tests:
+    steps:
+      - run:
+          name: Run Tests
+          command: |
+            bundle exec rake
+
+jobs:
+  test_core:
+    parameters:
+      stack:
+        type: executor
+        default: ruby_27
+    executor: << parameters.stack >>
+    steps:
+      - checkout
+      - setup
+      - run_tests
+
+workflows:
+  core:
+    jobs:
+      - test_core:
+          matrix:
+            parameters:
+              stack:
+                - ruby_27
+                - ruby_26
+                - ruby_25
